@@ -22,13 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '_n7tn_j5qul=g6@rc=*&4el()98*hfu@7(_r*oso1hok_&sv9y'
+#SECRET_KEY = '_n7tn_j5qul=g6@rc=*&4el()98*hfu@7(_r*oso1hok_&sv9y'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "localhost",
+    "localhost", '*'
 ]
 
 networks = str(subprocess.check_output(['ip','addr'])).split('\\n')
@@ -37,7 +38,8 @@ for net in networks:
     try:
         ip = net.split('inet')[1].split(" ")[1].split("/")[0]#strip().split('inet')[1].strip().split(' ')[0]
         if ip != "127.0.0.1":
-            ALLOWED_HOSTS.append(ip)
+            #ALLOWED_HOSTS.append(ip)
+            continue
 
     except IndexError:
         continue
@@ -62,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'vamos_de_compras.urls'
@@ -132,7 +135,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 ## Directorio de recursos
 MEDIA_URL = '/media/'
